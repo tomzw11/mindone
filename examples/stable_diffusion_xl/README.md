@@ -28,7 +28,7 @@ This folder contains [Stable Diffusion XL (SDXL)](https://arxiv.org/abs/2307.019
    - [FAQ](./docs/faq_cn.md)
 2. Inference
     - [Online Infer](./docs/inference.md)
-    - [Offline Infer](./docs/offline_inference/README.md)
+    - [Offline Infer](./offline_inference/README.md)
     - [LCM Infer](./docs/inference_lcm.md)
     - [ControlNet](./docs/controlnet.md)
 3. Finetune
