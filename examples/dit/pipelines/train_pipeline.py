@@ -6,6 +6,7 @@ from diffusion.diffusion_utils import _extract_into_tensor, discretized_gaussian
 import mindspore as ms
 from mindspore import nn, ops
 
+import mindspore.mint as mint
 
 class NetworkWithLoss(nn.Cell):
     def __init__(
@@ -118,7 +119,7 @@ class NetworkWithLoss(nn.Cell):
 
         B, C = x_t.shape[:2]
         assert model_output.shape == (B, C * 2) + x_t.shape[2:]
-        model_output, model_var_values = ops.split(model_output, C, axis=1)
+        model_output, model_var_values = mint.split(model_output, C, axis=1) # aclnn
 
         # Learn the variance using the variational bound, but don't let it affect our mean prediction.
         vb = self._cal_vb(ops.stop_gradient(model_output), model_var_values, x, x_t, t)
