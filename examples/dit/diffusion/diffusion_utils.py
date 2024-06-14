@@ -21,7 +21,7 @@ def _extract_into_tensor(a, t, x_shape):
     :return: a tensor of shape [batch_size, 1, ...] where the shape has K dims.
     """
     b = t.shape[0]
-    out = ops.GatherD()(a, -1, t)
+    out = ops.extend.gather()(a, -1, t) # aclnn
     return out.reshape(b, *((1,) * (len(x_shape) - 1)))
 
 
@@ -188,7 +188,7 @@ def continuous_gaussian_log_likelihood(x, *, means, log_scales):
     centered_x = x - means
     inv_stdv = ops.exp(-log_scales)
     normalized_x = centered_x * inv_stdv
-    log_probs = ms.nn.probability.Normal(ops.zeros_like(x), ops.ones_like(x)).log_prob(normalized_x)
+    log_probs = ms.nn.probability.Normal(ops.zeros_like_ext(x), ops.ones_like_ext(x)).log_prob(normalized_x) # aclnn
     return log_probs
 
 
