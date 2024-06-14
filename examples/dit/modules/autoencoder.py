@@ -55,7 +55,7 @@ class DiagonalGaussianDistribution(nn.Cell):
         self.std = ops.exp(0.5 * self.logvar)
         self.var = ops.exp(self.logvar)
         if self.deterministic:
-            self.var = self.std = ops.zeros_like(self.mean)
+            self.var = self.std = ops.zeros_like_ext(self.mean) # aclnn
 
     def sample(self):
         x = self.mean + self.std * ops.randn(self.mean.shape)
