@@ -23,6 +23,7 @@ from .diffusion_utils import (
     normal_kl,
 )
 
+import mindspore.mint as mint
 
 @ms.jit_class
 class GaussianDiffusion:
@@ -159,7 +160,7 @@ class GaussianDiffusion:
             extra = None
         if self.model_var_type in [ModelVarType.LEARNED, ModelVarType.LEARNED_RANGE]:
             assert model_output.shape == (B, C * 2, *x.shape[2:])
-            model_output, model_var_values = ops.split(model_output, C, axis=1)
+            model_output, model_var_values = mint.split(model_output, C, axis=1) # aclnn
             min_log = _extract_into_tensor(self.posterior_log_variance_clipped, t, x.shape)
             max_log = _extract_into_tensor(ops.log(self.betas), t, x.shape)
             # The model_var_values is [-1, 1] for [min_var, max_var].
@@ -604,11 +605,11 @@ class GaussianDiffusion:
             ]:
                 if x_t.dim() == 4:
                     assert model_output.shape == (B, C * 2, *x_t.shape[2:])
-                    model_output, model_var_values = ops.split(model_output, C, axis=1)
+                    model_output, model_var_values = mint.split(model_output, C, axis=1) # aclnn
                     frozen_out = ops.cat([model_output.copy(), model_var_values], axis=1)
                 else:
                     assert model_output.shape == (B, F, C * 2, *x_t.shape[3:])
-                    model_output, model_var_values = ops.split(model_output, C, axis=2)
+                    model_output, model_var_values = mint.split(model_output, C, axis=2) # aclnn
                     frozen_out = ops.cat([model_output.copy(), model_var_values], axis=2)
                 # Learn the variance using the variational bound, but don't let
                 # it affect our mean prediction.
