@@ -11,6 +11,8 @@ from mindone.models.modules.flash_attention import FLASH_IS_AVAILABLE, MSFlashAt
 from .modules import get_2d_sincos_pos_embed
 from .utils import constant_, exists, modulate, normal_, xavier_uniform_
 
+import mindspore.mint as mint
+
 __all__ = [
     "DiT",
     "DiT_models",
@@ -378,7 +380,7 @@ class TimestepEmbedder(nn.Cell):
         args = t[:, None].float() * freqs[None]
         embedding = ops.cat([ops.cos(args), ops.sin(args)], axis=-1)
         if dim % 2:
-            embedding = ops.cat([embedding, ops.zeros_like(embedding[:, :1])], axis=-1)
+            embedding = ops.cat([embedding, ops.zeros_like_ext(embedding[:, :1])], axis=-1) # aclnn
         return embedding
 
     def construct(self, t):
@@ -613,7 +615,7 @@ class DiT(nn.Cell):
         combined = ops.cat([half, half], axis=0)
         model_out = self.construct(combined, t, y)
         eps, rest = model_out[:, : self.in_channels], model_out[:, self.in_channels :]
-        cond_eps, uncond_eps = ops.split(eps, len(eps) // 2, axis=0)
+        cond_eps, uncond_eps = mint.split(eps, len(eps) // 2, axis=0) # aclnn
         half_eps = uncond_eps + cfg_scale * (cond_eps - uncond_eps)
         eps = ops.cat([half_eps, half_eps], axis=0)
         return ops.cat([eps, rest], axis=1)
